@@ -1,0 +1,15 @@
+{
+  "name": "taxflow-2026",
+  "version": "1.0.0",
+  "description": "TaxFlow 2026 W-4 Calculator with PDF Generation",
+  "scripts": {
+    "build": "echo 'No build step required'",
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
