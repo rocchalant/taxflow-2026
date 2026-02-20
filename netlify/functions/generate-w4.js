@@ -3,10 +3,10 @@ const { PDFDocument } = require('pdf-lib');
 // Verified 2026 W-4 Field IDs (extracted from IRS PDF)
 const FIELDS = {
   // Step 1a: Personal Info
-  firstName: 'topmostSubform[0].Page1[0].Step1a[0].f1_01[0]',
-  lastName: 'topmostSubform[0].Page1[0].Step1a[0].f1_02[0]',
-  address: 'topmostSubform[0].Page1[0].Step1a[0].f1_03[0]',
-  cityStateZip: 'topmostSubform[0].Page1[0].Step1a[0].f1_04[0]',
+  name: 'topmostSubform[0].Page1[0].Step1a[0].f1_01[0]',
+  address: 'topmostSubform[0].Page1[0].Step1a[0].f1_02[0]',
+  cityStateZip: 'topmostSubform[0].Page1[0].Step1a[0].f1_03[0]',
+  ssn: 'topmostSubform[0].Page1[0].Step1a[0].f1_04[0]',
   
   // Step 1c: Filing Status
   single: 'topmostSubform[0].Page1[0].c1_1[0]',
@@ -57,19 +57,11 @@ exports.handler = async (event) => {
     const pdfDoc = await PDFDocument.load(pdfBytes);
     const form = pdfDoc.getForm();
 
-    // Fill personal info (force uppercase)
-    setText(form, FIELDS.firstName, upper(userData.firstName));
-    setText(form, FIELDS.lastName, upper(userData.lastName));
-    setText(form, FIELDS.address, upper(userData.address));
-    setText(form, FIELDS.cityStateZip, upper(`${userData.city || ''}, ${userData.state || ''} ${userData.zip || ''}`.trim()));
-
-    // SSN field name has been inconsistent across IRS publishes; find it dynamically.
-    const ssnField = findFirstTextField(form, SSN_FIELD_CANDIDATES);
-    if (ssnField) {
-      setText(form, ssnField.name, formatSSN(userData.ssn));
-    } else {
-      console.warn('SSN field not found via candidates; SSN not written.');
-    }
+    // Fill personal info
+    setText(form, FIELDS.name, `${userData.firstName || ''} ${userData.lastName || ''}`.trim());
+    setText(form, FIELDS.address, userData.address || '');
+    setText(form, FIELDS.cityStateZip, `${userData.city || ''}, ${userData.state || ''} ${userData.zip || ''}`.trim());
+    setText(form, FIELDS.ssn, formatSSN(userData.ssn));
 
     // Filing status
     const filingMap = {
@@ -154,35 +146,6 @@ function setCheck(form, field) {
     console.warn('Checkbox not found:', field);
   }
 }
-
-
-function upper(value) {
-  return (value || '').toString().toUpperCase();
-}
-
-function findFirstTextField(form, candidates) {
-  for (const name of candidates) {
-    try {
-      const field = form.getTextField(name);
-      // Touching the field validates it exists
-      field.getText();
-      return { name, field };
-    } catch (e) {
-      // continue
-    }
-  }
-  return null;
-}
-
-const SSN_FIELD_CANDIDATES = [
-  // Most common patterns we've seen in IRS Designer PDFs
-  'topmostSubform[0].Page1[0].Step1b[0].f1_05[0]',
-  'topmostSubform[0].Page1[0].Step1b[0].f1_04[0]',
-  'topmostSubform[0].Page1[0].Step1a[0].f1_05[0]',
-  'topmostSubform[0].Page1[0].Step1a[0].f1_04[1]',
-  'topmostSubform[0].Page1[0].f1_05[0]',
-  'topmostSubform[0].Page1[0].f1_04[0]'
-];
 
 function formatSSN(ssn) {
   if (!ssn) return '';

@@ -178,15 +178,7 @@
             .wealth-stats { flex-direction: column; }
             .form-row { grid-template-columns: 1fr; }
         }
-    
-        .wealth-sub{
-            margin-top:6px;
-            font-size:13px;
-            color:#667085;
-            line-height:1.3;
-        }
-    
-</style>
+    </style>
 </head>
 <body>
     <header class="header">
@@ -335,8 +327,7 @@
             <div class="wealth-card" id="wealth-card">
                 <div class="wealth-title">💰 Your Hidden Raise</div>
                 <div class="wealth-amount" id="wealth-mo">+$0/mo</div>
-                <div class="wealth-label">estimated take-home change after updating your W-4</div>
-                <div class="wealth-sub">Positive = bigger paychecks (smaller refund). Negative = smaller paychecks (bigger refund).</div>
+                <div class="wealth-label">more in your pocket by updating W-4</div>
                 <div class="wealth-stats">
                     <div class="wealth-stat"><div class="wealth-stat-val" id="wealth-1y">$0</div><div class="wealth-stat-label">1 year</div></div>
                     <div class="wealth-stat"><div class="wealth-stat-val" id="wealth-5y">$0</div><div class="wealth-stat-label">5 years*</div></div>
@@ -385,7 +376,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Social Security Number</label>
-                        <input type="text" inputmode="numeric" autocomplete="off" class="form-input no-prefix" id="ssn" placeholder="123-45-6789" maxlength="11">
+                        <input type="text" class="form-input no-prefix" id="ssn" placeholder="123-45-6789" maxlength="11">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Address</label>
@@ -763,48 +754,6 @@
         });
 
         calc();
-    
-        // --- Input helpers (blue-collar friendly: stop bad input early) ---
-        function forceUpper(el){
-            if(!el) return;
-            el.addEventListener('input', () => {
-                const start = el.selectionStart;
-                const end = el.selectionEnd;
-                el.value = (el.value || '').toUpperCase();
-                // try to preserve cursor
-                try { el.setSelectionRange(start, end); } catch(e){}
-            });
-        }
-
-        function formatSSNDigits(raw){
-            const digits = (raw || '').replace(/\D/g,'').slice(0,9);
-            let out = digits;
-            if(digits.length > 5) out = digits.slice(0,3) + '-' + digits.slice(3,5) + '-' + digits.slice(5);
-            else if(digits.length > 3) out = digits.slice(0,3) + '-' + digits.slice(3);
-            return out;
-        }
-
-        function bindSSNMask(el){
-            if(!el) return;
-            el.addEventListener('input', () => {
-                const before = el.value || '';
-                const formatted = formatSSNDigits(before);
-                el.value = formatted;
-            });
-            el.addEventListener('paste', (e) => {
-                e.preventDefault();
-                const text = (e.clipboardData || window.clipboardData).getData('text');
-                el.value = formatSSNDigits(text);
-            });
-        }
-
-        // Bind on load
-        (function bindTaxFlowInputs(){
-            const upperIds = ['firstName','lastName','address','city','state'];
-            upperIds.forEach(id => forceUpper($(id)));
-            bindSSNMask($('ssn'));
-        })();
-    
-</script>
+    </script>
 </body>
 </html>
