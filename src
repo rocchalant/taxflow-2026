@@ -1,0 +1,28 @@
+// src/checkout.js
+export async function handleTaxFlowPurchase(userData, calcResults) {
+    Whop.openCheckout({
+        productId: 'prod_XXXXXXXXX', // Get this from your Whop Dashboard
+        onSuccess: async (membership) => {
+            // Success: Reveal the "Ooze" loading state
+            const status = document.getElementById('generate-status');
+            status.innerText = "Payment Verified. Generating your raise... 🚀";
+            
+            const response = await fetch('/.netlify/functions/generate-w4', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    whopToken: membership.id, 
+                    userData: userData,
+                    calcResults: calcResults
+                })
+            });
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "TaxFlow-2026-Raise.pdf";
+            a.click();
+        }
+    });
+}
