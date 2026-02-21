@@ -1,0 +1,26 @@
+{
+  "name": "taxflow-2026",
+  "version": "2.0.0",
+  "description": "TaxFlow 2026 - Instant Raise W-4 Calculator with Whop Paywall",
+  "scripts": {
+    "build": "echo 'No build step required'",
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "crypto": "^1.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "tax",
+    "w4",
+    "calculator",
+    "2026",
+    "obbba",
+    "instant-raise"
+  ],
+  "author": "TaxFlow",
+  "license": "MIT"
+}
